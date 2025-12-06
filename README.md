@@ -1,4 +1,4 @@
-Advent of Code — Minha experiência resolvendo os primeiros 5 dias (2025)
+# Advent of Code
 
 O Advent of Code é uma série de desafios diários que acontecem todo mês de dezembro, sempre divididos em duas partes.
 Decidi que em 2025 iria fazer e registrar algumas soluções que achei interessantes — e também alguns problemas legais que precisei resolver no caminho.
@@ -256,3 +256,73 @@ Para cada intervalo mesclado:
 quantidade = (fim + 1) - início
 
 Depois somar tudo.
+
+📅 Dia 6 — Cephalopod Math (colunas invertidas)
+
+Input:
+
+matriz de números (com espaços representando ausência de dígitos)
+
+última linha contendo símbolos * ou +
+
+leitura especial: da direita para a esquerda, de cima para baixo
+
+Parte 1 — Soma ou multiplicação por coluna
+
+Ler a matriz normalmente
+
+Remover espaços de cada célula
+
+Para cada coluna:
+
+Se o símbolo na última linha for +, somar os números da coluna
+
+Se for *, multiplicar
+
+Somar todos os resultados
+
+Parte 2 — Interpretar números verticalmente, da direita para a esquerda
+
+Regra do input:
+Cada coluna deve ser lida de cima para baixo, mas as colunas precisam ser processadas da direita para a esquerda.
+Espaços contam como “sem dígito”.
+
+Minha dificuldade
+
+Tentei primeiro reconstruir a matriz já no formato final conforme a regra
+
+Isso me levou a criar 3 loops aninhados
+
+Funcionava no input de exemplo, mas quebrava no input real
+
+Além disso, a solução estava ficando lenta e desnecessariamente complexa
+
+Como resolvi
+
+Percebi que o problema estava em tentar montar a matriz final depois de ler o arquivo
+
+Então troquei a abordagem:
+
+✔️ Ler o input por colunas em vez de por linhas
+✔️ Criar uma matriz transposta diretamente na leitura
+✔️ Com isso, obtive algo como uma lista de tuplas contendo cada coluna completa
+
+Exemplo de estrutura intermediária:
+
+('1',' ',' ','*')
+('2','4',' ',' ')
+('3','5','6',' ')
+...
+
+
+Depois foi só:
+
+Fazer .join() na tupla
+
+Remover espaços
+
+Identificar * ou + no primeiro caractere válido
+
+Tratar o restante como número
+
+Aplicar a operação correspondente
