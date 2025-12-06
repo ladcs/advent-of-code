@@ -1,31 +1,27 @@
-# Advent of Code
+# 🎄 Advent of Code 2025 — Minhas Soluções, Insights e Dificuldades
 
-O Advent of Code é uma série de desafios diários que acontecem todo mês de dezembro, sempre divididos em duas partes.
+O Advent of Code é uma série de desafios diários que acontecem todo mês de dezembro, sempre divididos em duas partes.  
 Decidi que em 2025 iria fazer e registrar algumas soluções que achei interessantes — e também alguns problemas legais que precisei resolver no caminho.
 
 Abaixo compartilho meu raciocínio dia a dia, incluindo insights, problemas encontrados e soluções robustas que desenvolvi.
 
-📅 Dia 1 — Roleta circular (wrap-around)
+---
+
+## 📅 Dia 1 — Roleta circular (wrap-around)
 
 O desafio envolve uma roleta de 0 a 99. Cada comando vem no formato:
 
-LX → mover X para a esquerda (subtrair)
-
-RX → mover X para a direita (somar)
+- `LX` → mover X para a esquerda (subtrair)  
+- `RX` → mover X para a direita (somar)
 
 A roleta é circular:
 
-de 99 e aplicar R2 → vai para 1
+- de 99 e aplicar `R2` → vai para 1  
+- de 0 e aplicar `L2` → vai para 98  
 
-de 0 e aplicar L2 → vai para 98
+O número inicial é **50**, e cada resultado vira o offset da próxima operação.
 
-O número inicial é 50, e cada resultado vira o offset da próxima operação.
-
-Parte 1
-
-Contar quantas vezes o valor resultante é 0.
-
-Solução
+### **Parte 1 — Quantas vezes o valor resultante é 0**
 
 Usei a lógica de wrap-around com módulo:
 
@@ -34,280 +30,245 @@ novo_valor = (valor_atual + deslocamento) % 100
 
 Exemplos:
 
-R50 → (50 + 50) % 100 = 0
-
-L10 → (50 - 10) % 100 = 40
+- `R50` → (50 + 50) % 100 = **0**  
+- `L10` → (50 - 10) % 100 = **40**  
 
 Simples e eficiente.
 
-Parte 2
+---
 
-Agora preciso também contar quantas vezes a roleta passa pelo 0, mesmo que não pare nele.
+### **Parte 2 — Quantas vezes a roleta passa pelo zero**
 
-Exemplos:
+Regras:
 
-Começa em 50, R52 → passa 1 vez por 0
+- Começa em 50, `R52` → passa **1 vez** por 0  
+- Começa em 50, `R150` → passa 1 vez e termina em 0 → **conta 2**  
+- Começa em 50, `R1000` → passa **50 vezes**
 
-Começa em 50, R150 → passa 1 vez e termina em 0 → conta 2
+#### Primeira tentativa
 
-Começa em 50, R1000 → passa 50 vezes
+- se for **R** e o valor final é menor que o inicial → passou pelo zero  
+- se for **L** e o final é maior → passou pelo zero  
+- somar também `abs(X) // 100` para voltas completas  
 
-Primeira tentativa
+#### Problemas
 
-Usei a lógica:
+- começando em 0, eu contava uma passagem extra  
+- quando terminava em 0, contava 2 vezes indevidamente  
 
-se for R e o valor final é menor que o inicial → passou pelo zero
+#### Solução final
 
-se for L e o final é maior → passou pelo zero
+Só conto passagem se **a operação não começar ou terminar em 0**.  
+Isso eliminou duplicações e tornou o cálculo correto.
 
-somar também abs(X) // 100 para contar voltas completas
+---
 
-Problemas encontrados
+## 📅 Dia 2 — Intervalos numéricos e padrões repetidos
 
-Se começar em 0 e aplicar operação, contava indevidamente uma passagem extra
-
-Quando X > 100 e terminava em 0, eu contava 2 vezes o zero (duplicado)
-
-Solução final
-
-Só contar passagem se a operação não começar ou terminar em 0.
-Isso garantiu que o zero fosse contabilizado corretamente apenas quando realmente atravessado.
-
-📅 Dia 2 — Intervalos numéricos e padrões repetidos
-
-Entrada no formato "x-y".
+Entrada no formato `x-y`.  
 Objetivo: encontrar números dentro do intervalo que seguem padrões específicos.
 
-Parte 1 — Números que repetem sua primeira metade
+---
+
+### **Parte 1 — Números que repetem sua primeira metade**
 
 Exemplos válidos:
 
-11, 22 em 11–22
+- `11`, `22`
+- `1010` (repete “10”)
 
-1010 em 998–1012 (repete “10”)
+#### Lógica utilizada
 
-Lógica utilizada
+- pegar quantidade de dígitos do início e do fim do intervalo  
+- para números com dígitos pares:
+  - dividir em 2
+  - duplicar a primeira metade  
+- se o número gerado for menor que o início do intervalo:  
+  - incrementar a metade e gerar de novo  
+- se o início tem dígitos ímpares e o final pares:
+  - gerar a partir do menor número possível com dígitos pares compatíveis  
 
-Pegar quantidade de dígitos do início e do fim do intervalo.
+Funcionou muito bem.
 
-Para números com dígitos pares:
+---
 
-dividir em 2
-
-duplicar a primeira metade
-
-ex.: 123456 → 123|123
-
-Se o número gerado estiver abaixo do intervalo:
-
-incrementar a metade e tentar novamente
-
-Se o início do intervalo tiver dígitos ímpares e o final tiver pares:
-
-começar pela menor metade possível que gere um número válido de mesmo tamanho do limite superior.
-Ex.: intervalo 998–1024 → começo a testar a partir de 1000.
-
-Funcionou perfeitamente.
-
-Parte 2 — Números formados por repetição integral de um bloco
+### **Parte 2 — Números formados por repetição integral de um bloco**
 
 Exemplos válidos:
 
-11, 111, 1111 → repete “1”
+- `11`, `111`, `1111`  
+- `1010`, `101010`  
+- `123123123`
 
-1010, 101010 → repete “10”
+#### Minha solução inicial
 
-123123123 → repete “123”
+Fiz **força bruta**: testar cada número e verificar se é repetição.
 
-Confesso fiz força bruta: testar cada número do intervalo e verificar repetições.
-Funcionou, mas não gostei da solução.
+Funciona, mas não gostei.
 
-Solução pare testar futuramente.
+#### Ideia futura (mais elegante)
 
-Acredito que poderia gerar diretamente os números que são repetições, sem testar um por um.
+Gerar apenas números que são repetições, sem testar todos do intervalo.
 
-Exemplo:
+Exemplo para `110–10000`:
 
-intervalo: 110–10000
+1. **Repetições de 1 dígito**
+   - 111, 1111, 11111  
+   - 222, 2222, 22222  
+   - …  
+   - 999, 9999, 99999  
+   (descartar maiores que o limite)
 
-1️⃣ Repetições de 1 dígito
+2. **Repetições de 2 dígitos**
+   - Ex.: 12 → 1212  
+   - Só números de 4 dígitos servem  
+   - 6 dígitos já extrapola
 
-Gerar:
+3. **Repetições de 3 dígitos**
+   - Gerariam 6 dígitos → excede 5 → ignorado
 
-111, 1111, 11111
-222, 2222, 22222
-...
-999, 9999, 99999
+Gerar tudo, colocar num `set()`, e filtrar apenas os que caem no intervalo.
 
+---
 
-Os últimos são descartado pois ultrapassam 10000.
+## 📅 Dia 3 — Construindo o maior número possível mantendo ordem
 
-2️⃣ Repetições de 2 dígitos
-
-Com bloco de 2 dígitos posso gerar números de:
-
-4 dígitos → ok
-
-6 dígitos → já extrapola o limite de 5 dígitos → descarta
-
-Exemplo:
-
-11 → 1111
-12 → 1212
-...
-99 → 9999
-
-3️⃣ Repetições de 3 dígitos
-
-Bloco de 3 dígitos gera:
-
-6 dígitos → ultrapassa limite de 5 → não serve
-Ignorado.
-
-4️⃣ Agregação
-
-Todos os números gerados vão para um set() para remover duplicatas.
-Depois somo apenas os que estão no intervalo.
-
-📅 Dia 3 — Construindo o maior número possível mantendo ordem
-
-O input é uma sequência, como:
+Input:
 
 123455811119112
 
 
-Na parte 1, o objetivo é construir o maior número de 2 dígitos, mantendo a ordem dos originais.
+### **Parte 1 — Maior número de 2 dígitos**
 
 Estratégia:
 
-Removo o último número
+1. Remover o último número  
+2. Procurar o maior dos 14 restantes como primeiro dígito  
+3. Para o segundo dígito:
+   - ignorar índices ≤ ao escolhido  
+   - escolher o maior do restante  
 
-Procuro o maior entre os 14 restantes para o primeiro dígito
+### **Parte 2 — Maior número de 12 dígitos**
 
-Para o segundo dígito, ignoro tudo com índice ≤ do primeiro escolhido
+Aqui a janela de escolhas desliza:
 
-Escolho o maior do restante
+- Para gerar 12 dígitos a partir de 15:
+  - o primeiro dígito só pode ser escolhido entre os **4 primeiros**
+- Quanto mais à direita a escolha, menor a janela seguinte
 
-Simples e funcional.
+Esse raciocínio funciona para qualquer N.
 
-Parte 2 — 12 dígitos
+---
 
-Mesma lógica — porém agora com janelas deslizantes.
+## 📅 Dia 4 — Matriz e adjacências
 
-Percebi que para gerar 12 dígitos a partir de 15 números:
+Input: matriz com `@` e `.`  
+Adjacências incluem diagonais.
 
-o primeiro dígito só pode ser escolhido entre os 4 primeiros
+---
 
-dependendo da posição escolhida, a janela de escolhas seguintes encolhe
+### **Parte 1 — Contar @ com exatamente 3 adjacentes**
 
-Exemplo:
+- Identificar regiões fronteira  
+- Verificar cada `@`  
+- Contar adjacentes  
+- Somar apenas os que têm **3 adjacentes**
 
-Se na primeira escolha o número escolhido for um dos primeiros no array, a próxima escolha terá um liberdade maior. No caso atual a primeira escolha te liberdade de 4, se o primeiro número foi a primeira escolha a segunda tera a liberdade de 4 números, ja se a primeira escolha for o segundo número a próxima escolha tera liberdade entre 3 e assim por diante.
+---
 
-Foi um caso interessante de observar impacto de "janela de deslizamento" na decisão.
-
-O bom que o pensamento dessa parte pode ser usando para n digitos, inclusive para 2 digitos.
-
-📅 Dia 4 — Matriz e adjacências
-
-Input: matriz com @ e .
-Sempre que um @ tiver menos de 4 adjacentes (incluindo diagonais), algo deve ser feito.
-
-Parte 1 — Contar @ com exatamente 3 adjacentes
-
-Identifiquei posições fronteira (linhas e colunas extremas assim como @ adjacente aos .).
-
-A partir dessas posições, procuro @.
-
-Para cada @, conto adjacentes — se tiver 3, acumulo.
-
-Parte 2 — Quantos @ podem ser removidos
+### **Parte 2 — Quantos @ podem ser removidos**
 
 Processo iterativo:
 
-Usar a mesma detecção da parte 1
+1. Detectar `@` com ≤ 3 adjacentes  
+2. Substituir por `.`  
+3. Repetir até estabilizar  
 
-Substituir @ por . quando tem ≤ 3 adjacentes
+---
 
-Repetir até não existir mais @ removível
-
-📅 Dia 5 — Intervalos e IDs válidos
+## 📅 Dia 5 — Intervalos e IDs válidos
 
 Input:
 
-lista de intervalos (x-y)
+- lista de intervalos (x-y)  
+- lista de IDs  
 
-lista de IDs
+---
 
-Parte 1 — Quantos IDs estão em algum intervalo
+### **Parte 1 — IDs dentro de algum intervalo**
 
-Faça merge de intervalos que se sobrepõem
+- Mesclar intervalos sobrepostos  
+  - ex.: `16–20` e `12–18` → `12–20`  
+- Verificar para cada ID  
+- Contar
 
-ex.: 16–20 e 12–18 → viram 12–20
+---
 
-Para cada ID da lista, verifico se está dentro de algum intervalo mesclado
-
-Conto
-
-Parte 2 — Quantos valores existem dentro dos intervalos
+### **Parte 2 — Quantos valores existem dentro dos intervalos**
 
 Para cada intervalo mesclado:
 
 quantidade = (fim + 1) - início
 
-Depois somar tudo.
 
-📅 Dia 6 — Cephalopod Math (colunas invertidas)
+Depois somar tudo — simples e direto.
+
+---
+
+## 📅 Dia 6 — Cephalopod Math (colunas invertidas)
 
 Input:
 
-matriz de números (com espaços representando ausência de dígitos)
+- Matriz de dígitos (com espaços significando ausência)
+- Última linha: símbolos `*` ou `+`
+- Leitura especial:  
+  **colunas de cima para baixo**, mas processando **da direita para a esquerda**
 
-última linha contendo símbolos * ou +
+---
 
-leitura especial: da direita para a esquerda, de cima para baixo
+### **Parte 1 — Soma ou multiplicação por coluna**
 
-Parte 1 — Soma ou multiplicação por coluna
+Passos:
 
-Ler a matriz normalmente
+1. Ler matriz normalmente  
+2. Remover espaços  
+3. Para cada coluna:  
+   - `+` → soma  
+   - `*` → multiplicação  
+4. Somar os resultados
 
-Remover espaços de cada célula
+---
 
-Para cada coluna:
+### **Parte 2 — Interpretar números verticalmente e ao contrário**
 
-Se o símbolo na última linha for +, somar os números da coluna
+A regra:
 
-Se for *, multiplicar
+- cada coluna é um número formado verticalmente  
+- o processamento ocorre da direita para a esquerda  
+- espaços são “não dígitos”
 
-Somar todos os resultados
+---
 
-Parte 2 — Interpretar números verticalmente, da direita para a esquerda
+### **Minha dificuldade**
 
-Regra do input:
-Cada coluna deve ser lida de cima para baixo, mas as colunas precisam ser processadas da direita para a esquerda.
-Espaços contam como “sem dígito”.
+Minha primeira abordagem:
 
-Minha dificuldade
+❌ tentar gerar toda a matriz final depois de ler o arquivo  
+❌ loops aninhados  
+❌ funcionava no exemplo, **quebrava no input real**  
+❌ solução ficando lenta e complexa  
 
-Tentei primeiro reconstruir a matriz já no formato final conforme a regra
+---
 
-Isso me levou a criar 3 loops aninhados
+### **Solução final — Ler por colunas**
 
-Funcionava no input de exemplo, mas quebrava no input real
+Troquei a estratégia:
 
-Além disso, a solução estava ficando lenta e desnecessariamente complexa
+✔️ ler o input **por colunas**, não por linhas  
+✔️ criar a matriz já transposta  
+✔️ gerar tuplas representando as colunas completas
 
-Como resolvi
-
-Percebi que o problema estava em tentar montar a matriz final depois de ler o arquivo
-
-Então troquei a abordagem:
-
-✔️ Ler o input por colunas em vez de por linhas
-✔️ Criar uma matriz transposta diretamente na leitura
-✔️ Com isso, obtive algo como uma lista de tuplas contendo cada coluna completa
-
-Exemplo de estrutura intermediária:
+Exemplo:
 
 ('1',' ',' ','*')
 ('2','4',' ',' ')
@@ -317,12 +278,13 @@ Exemplo de estrutura intermediária:
 
 Depois foi só:
 
-Fazer .join() na tupla
+- usar `.join()` na tupla  
+- remover espaços  
+- identificar `*` ou `+`  
+- tratar o resto como número  
+- aplicar a operação correta  
 
-Remover espaços
+Simples, rápido e elegante.
 
-Identificar * ou + no primeiro caractere válido
+---
 
-Tratar o restante como número
-
-Aplicar a operação correspondente
