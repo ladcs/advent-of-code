@@ -221,8 +221,6 @@ Input:
 
 - Matriz de dígitos (com espaços significando ausência)
 - Última linha: símbolos `*` ou `+`
-- Leitura especial:  
-  **colunas de cima para baixo**, mas processando **da direita para a esquerda**
 
 ---
 
@@ -285,6 +283,38 @@ Depois foi só:
 - aplicar a operação correta  
 
 Simples, rápido e elegante.
+
+---
+
+## 📅 Dia 7 — tachyon manifolds
+
+Input:
+
+- Matriz quadrada de com os carcteres `.`, `S` e `^`.
+
+---
+
+### **Parte 1 — Soma ou multiplicação por coluna**
+
+Passos:
+
+1. criar uma lista de com número 0 com a dimensão da linha da matriz
+2. Achar o simbolo `S` na primeira linha, incrementar o zero da lista na posição do `S`
+3. Procurar o simbolo `^`, se a lista tiver um número maior que zero incrementa o valor da resposta
+
+---
+
+### **Parte 2 — Interpretar números verticalmente e ao contrário**
+
+A regra:
+
+- cada simbolo `^` encontra a possibilidade de passar pelos adjacentes em 1.
+
+---
+
+1. segue os passos 1 e 2 da parte 1
+2. quando passa por um `^` se na lista o lugar referente for maior que 0, incrementa os dois do lado com o valor dado e zera o referente.
+3. soma todos os valores da lista.
 
 ---
 
