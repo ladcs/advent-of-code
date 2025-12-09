@@ -294,7 +294,7 @@ Input:
 
 ---
 
-### **Parte 1 — Soma ou multiplicação por coluna**
+### **Parte 1 — caminho dos tachyon**
 
 Passos:
 
@@ -304,7 +304,7 @@ Passos:
 
 ---
 
-### **Parte 2 — Interpretar números verticalmente e ao contrário**
+### **Parte 2 — possiveis universo para unico tachyon**
 
 A regra:
 
@@ -318,3 +318,31 @@ A regra:
 
 ---
 
+## 📅 Dia 8 — Playground
+
+Input:
+
+- pontos em um ambiente 3D, ou seja recebi valores de pontos (x, y, z).
+
+---
+
+### **Parte 1 — conectar de forma limitada**
+
+Passos:
+
+- input adicional, limitação de ligações
+
+1. Achar as distancias entre pontos.
+2. Ordenar pelas distancias mais proximas, limitado pela requisição.
+3. Unir os pontos por grupos.
+4. multiplicar a quantidade de pontos com os 3 maiores grupos.
+
+OBS.: após esse exercicio fui procurar uma melhor alternativa de resolução e acabei descobrindo Kruskal's Algorithm, ou union–find data, com ela o codigo ficou mais enxuto, embora a primeira versão nao tenha se distanciado muito, em quesito de O(n) para processamento.
+
+---
+
+### **Parte 2 — achar a ligação dos dois últimos nós**
+
+Como ja havia usado o union-find, segui os 3 primeiros passoas, até juntar todos os pontos, ao invés da limitação, como o union-find retornando True quando a ligação era bem sucedida, pegava os últimos pontos da união e multiplacava os 2 x.
+
+---
